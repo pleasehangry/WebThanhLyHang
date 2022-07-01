@@ -21,7 +21,7 @@ const upload = multer({
 }) 
 
 router.get('/create', productsController.create)
-router.post('/store', upload.single('img'), productsController.store)
+router.post('/store',upload.single('img'), productsController.store)
 router.get('/:id/edit', productsController.edit)
 router.post('/handle-form-actions', productsController.handleFormActions)
 router.put('/:id', upload.single('img'), productsController.update)

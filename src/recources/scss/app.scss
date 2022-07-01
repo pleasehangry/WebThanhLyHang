@@ -28,7 +28,7 @@ body {
 }
 
 .container {
-    min-height: 300px;
+    min-height: 400px;
 }
 
 p {
@@ -231,7 +231,7 @@ h2 {
 }
 
 .header-btn-item:hover .header_cart-item{
-    display: block;
+    display: none;
     z-index: 999;
 }
 

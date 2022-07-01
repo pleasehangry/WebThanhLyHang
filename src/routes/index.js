@@ -11,7 +11,7 @@ const authMiddleware = require('../app/middlewares/authMiddleware');
 const DTO = require('../app/middlewares/DTO');
 
 function route(app){
-    app.use('/news', authMiddleware, newRouter);
+    app.use('/news', newRouter);
     app.use('/comments', authMiddleware, cmtsRouter);
     app.use('/auth', authRouter);
     app.use('/admin', authMiddleware, adminRouter);

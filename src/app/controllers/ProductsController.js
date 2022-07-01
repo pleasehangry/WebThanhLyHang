@@ -94,12 +94,21 @@ class ProductsController {
   }
   //[Put] /product/:id
   update(req, res, next) {
-    if (!req.file.filename) {
+    if (!req.file) {
       Product.findOne({ _id: req.params.id }).then((product) => {
         req.body.img = product.img;
       });
     } else {
       req.body.img = req.file.filename;
+    }
+    if(!req.body.name || !req.body.price || !req.body.quantity){
+      Product.findOne({ _id: req.params.id }).then((product) => {
+        res.render("products/edit", {
+          errors: ["Hãy nhập đủ các trường"],
+          product: mongooseToObject(product),
+        });
+      });
+      return;
     }
     Product.updateOne({ _id: req.params.id }, req.body)
       .then(() => res.redirect("/me/stored/products"))

@@ -42,8 +42,8 @@ class MeController {
   }
 
   //[post] / me/cart/product
-  async addCartProduct(req, res, next) {
-    await OrderDetail.findOne(
+  addCartProduct(req, res, next) {
+    OrderDetail.findOne(
       { productId: req.body.productId, customerId: req.cookies.userId },
       function (err, orderDetail) {
         if (err) return res.send(err);
@@ -63,9 +63,9 @@ class MeController {
     );
   }
   //[post] / me/addOrder
-  async addOrder(req, res, next) {
+  addOrder(req, res, next) {
     var sellerId;
-    await OrderDetail.findOne({ _id: req.body.orderDetailId })
+    OrderDetail.findOne({ _id: req.body.orderDetailId })
       .then((orderDetail) => {
         Product.findOne({ _id: orderDetail.productId }).then((product) => {
           sellerId = product.userId;
@@ -240,8 +240,10 @@ class MeController {
                 (product) => {
                   var sellerId = product.userId;
                   var orderDetailId = orderDetail._id;
+                  var OrderQtt = orderDetail.quantity;
                   req.body.sellerId = sellerId;
                   req.body.orderDetailId = orderDetailId;
+                  req.body.OrderQtt = OrderQtt;
                   const formdata = req.body;
                   const order = new Order(formdata);
                   order

@@ -1,5 +1,4 @@
 <header class="header">
-    {{#if user}}
     <div class="header-wrap">
         <a href="/" class="home-btn">
         <img src="https://i.pinimg.com/736x/07/66/3f/07663f5ad340683b6cdd8f0b73a95416.jpg" alt="" class="header-img">
@@ -69,6 +68,8 @@
                 </div>
                 
             </li>
+            
+            {{#if user}}
             <li class="header-btn-item">
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown inline-display">
@@ -95,7 +96,7 @@
                     </li>
                 </ul> 
             </li>
+            {{/if}}
         </ul>
     </div>
-    {{/if}}
 </header> 

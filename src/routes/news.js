@@ -23,6 +23,6 @@ const upload = multer({
 
 router.post('/stored', upload.single('img'), newsController.create)
 router.delete('/:id/delete', newsController.destroy);
-router.get('/', newsController.index)
+router.get('/', authMiddleware, newsController.index)
 
 module.exports = router
