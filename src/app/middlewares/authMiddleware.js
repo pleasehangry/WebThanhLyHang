@@ -19,16 +19,6 @@ module.exports = async function requireLogin(req, res, next) {
         }
         res.locals.user = mongooseToObject(user);
     });
-    OrderDetail.find({ UserId: req.cookies.userId }, function (err, orders) {
-        if (orders) {
-            const arr = [];
-            orders.forEach((order) => arr.push(order.productId));
-            Product.find({ _id: { $in: arr } }, function (err, cartItems) {
-                if (cartItems)
-                    res.locals.cartItems = mitipleMongooseToObject(cartItems);
-            });
-        }
-    });
     //muon tam ham de do du lieu vao header
     Category.find({}, function (err, categories) {
         if (categories) {
