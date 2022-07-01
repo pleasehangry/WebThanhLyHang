@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Product = require("../models/Product");
 const OrderDetail = require("../models/OrderDetail");
 const Order = require("../models/Order");
+const toast = require("../middlewares/ToastMesssage");
 const {
   mitipleMongooseToObject,
   mongooseToObject,
@@ -16,7 +17,10 @@ class MeController {
         [req.query.column]: req.query.type,
       });
     }
-    Promise.all([productQuery, Product.countDocumentsDeleted({userId: req.cookies.userId})])
+    Promise.all([
+      productQuery,
+      Product.countDocumentsDeleted({ userId: req.cookies.userId }),
+    ])
       .then(([products, deletedCount]) =>
         res.render("me/storedProducts", {
           deletedCount,
@@ -38,8 +42,8 @@ class MeController {
   }
 
   //[post] / me/cart/product
-  addCartProduct(req, res, next) {
-    OrderDetail.findOne(
+  async addCartProduct(req, res, next) {
+    await OrderDetail.findOne(
       { productId: req.body.productId, customerId: req.cookies.userId },
       function (err, orderDetail) {
         if (err) return res.send(err);
@@ -59,9 +63,9 @@ class MeController {
     );
   }
   //[post] / me/addOrder
-  addOrder(req, res, next) {
+  async addOrder(req, res, next) {
     var sellerId;
-    OrderDetail.findOne({ _id: req.body.orderDetailId })
+    await OrderDetail.findOne({ _id: req.body.orderDetailId })
       .then((orderDetail) => {
         Product.findOne({ _id: orderDetail.productId }).then((product) => {
           sellerId = product.userId;
@@ -136,13 +140,12 @@ class MeController {
         const b = [];
         const c = [];
         const d = [];
-        const e = [];
+        const e = orders.map((order) => order.OrderQtt);
         OrderDetail.find({ _id: { $in: a } }, { deleted: false })
           .then((orderDetails) => {
             orderDetails.forEach((orderDetail) => {
               d.push(orderDetail.productId);
               b.push(orderDetail.customerId);
-              e.push(orderDetail.quantity);
             });
             for (let i = 0; i < b.length; i++) {
               User.findById(b[i], function (err, user) {
@@ -170,6 +173,53 @@ class MeController {
           })
           .catch(next);
       })
+      .catch(next);
+  }
+  //[GET] /me/order-status
+  async orderStatus(req, res, next) {
+    Order.find({})
+      .then( Orders => {
+        const OrderStatus = [];
+        Orders.forEach( O => {
+          Order.findById(O._id)
+            .then( OD => {
+              return OrderDetail.findOne({_id: OD.orderDetailId})
+                .then(ODe => {
+                  OD = mongooseToObject(OD);
+                  ODe = mongooseToObject(ODe);
+                  return {
+                    OD,
+                    ODe
+                  }
+                })
+            })
+            .then(data => {
+              return Product.findById(data.ODe.productId)
+                .then(product => {
+                  product = mongooseToObject(product);
+                  return {
+                    Order: data.OD,
+                    OrderDetail: data.ODe,
+                    Product: product
+                  }
+                })
+            })
+            .then(data => {
+              if(data.OrderDetail.customerId == req.cookies.userId){
+                OrderStatus.push(data);
+              }
+            })
+        })
+        console.log(OrderStatus);
+        res.render('me/statusOrder', { OrderStatus })
+      })
+      .catch(next)
+  }
+
+  //[DELETE] /me/:id/deleteOrder
+  async DeleteOrder(req, res, next){
+    await Order.deleteOne({_id: req.params.id})
+      .then(() => res.redirect("back"))
       .catch(next);
   }
 

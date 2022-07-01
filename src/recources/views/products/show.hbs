@@ -1,5 +1,6 @@
 <div class="mt-4 container">
-    <form class="row product-show-container"  method="post" action="/me/addCartProduct">
+    <form class="row product-show-container" method="post" action="/me/addCartProduct">
+        <div id="toast"></div>
         <div class="col-4">
           <img src="/uploads/{{data.product.img}}" alt="{{data.product.name}}" class="show-product-img">
         </div>
@@ -18,8 +19,11 @@
                   <input type="password" class="form-control" value="{{data.product._id}}" id="productId" name = "productId">
                 </div>
                 <div class="d-flex align-items-center mt-2">
-                  <input class="qtt-input-product-show mr-1" type="text" value="1" id="quantity" name = "quantity">
-                  <button type="submit" style="flex: 1;" class="btn btn-primary">Thêm vào giỏ hàng</button>
+                  {{!-- <input class="qtt-input-product-show mr-1" type="text" value="1" id="quantity" name = "quantity"> --}}
+                    <div class="value-button" id="decrease" onclick="decreaseValue()" value="Decrease Value">-</div>
+                    <input name="quantity" type="text" id="quantity" value="1" />
+                    <div class="value-button" id="increase" onclick="increaseValue()" value="Increase Value">+</div>
+                  <button type="submit" style="flex: 1;" class="btn btn-primary add-cart-btn">Thêm vào giỏ hàng</button>
                 </div>
                 {{#if errors}}
                   {{#each errors}}
@@ -94,11 +98,15 @@
 </form>
 
 <script>
+  // Toast function
+
   document.addEventListener("DOMContentLoaded", function(){
     //post comment
     var deleteCmtForm = document.forms["delete-comment-form"]
     var cmtForms = document.querySelector('.post-cmts-form')
     var cmtInputSubmit = document.querySelector('.comment-submit-input');
+    var addCartBtn = document.querySelector('.add-cart-btn')
+    var addCartForm = document.forms["add-cart-form"];
     cmtInputSubmit.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -116,4 +124,25 @@
         deleteCmtForm.submit()
     })
   })
+</script>
+
+<script>
+  var maxqtt = `{{data.product.quantity}}`
+  maxqtt = parseInt(maxqtt, 10);
+  function increaseValue() {
+  var value = parseInt(document.getElementById('quantity').value, 10);
+  value = isNaN(value) ? 1 : value;
+  if(value < maxqtt) {
+    value++;
+  }
+  document.getElementById('quantity').value = value;
+  }
+
+function decreaseValue() {
+  var value = parseInt(document.getElementById('quantity').value, 10);
+  value = isNaN(value) ? 1 : value;
+  value--;
+  value < 1 ? value = 1 : '';
+  document.getElementById('quantity').value = value;
+}
 </script>

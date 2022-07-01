@@ -40,7 +40,7 @@ class AdminController {
         [req.query.column]: req.query.type,
       });
     }
-    Promise.all([productQuery, Product.countDocumentsDeleted()])
+    Promise.all([productQuery, Product.count({isChecked: false})])
       .then(([products, deletedCount]) =>
         res.render("admin/pendingProducts", {
           deletedCount,

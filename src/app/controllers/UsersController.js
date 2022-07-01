@@ -40,7 +40,7 @@ class UsersController {
   }
   //[Put] /User/:id
   update(req, res, next) {
-    if (!req.file.filename) {
+    if (!req.file) {
       User.findOne({ _id: req.params.id }).then((user) => {
         req.body.avatar = user.avatar;
       });

@@ -7,7 +7,7 @@ const {
     mongooseToObject,
 } = require("../../util/mongoose");
 
-module.exports = function requireLogin(req, res, next) {
+module.exports = async function requireLogin(req, res, next) {
     if (!req.cookies.userId) {
         res.redirect("/auth/login");
         return;

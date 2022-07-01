@@ -106,9 +106,9 @@ class ProductsController {
       .catch(next);
   }
   //[Delete] /product/:id
-  destroy(req, res, next) {
+  async destroy(req, res, next) {
     var arr = [];
-    OrderDetail.find({ productId: req.params.id })
+    await OrderDetail.find({ productId: req.params.id })
       .then((ODs) => {
         ODs.forEach((OD) => arr.push(OD._id));
         Promise.all([

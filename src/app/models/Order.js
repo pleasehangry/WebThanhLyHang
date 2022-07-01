@@ -6,6 +6,7 @@ var mongooseDelete = require('mongoose-delete');
 const Order = new Schema({
     sellerId: { type: String, required: true},
     orderDetailId: {type: String, require: true},
+    OrderQtt: {type: Number, required: true},
 },{
     timestamps: true,
 })

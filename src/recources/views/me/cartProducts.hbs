@@ -1,6 +1,7 @@
 <form name="delete-product-cart-form" method="post"></form>
 <form class="mt-4 container" name="container-form" method="post" action="/me/handle-form-actions">
   <div>
+    <div id="toast"></div>
     <h3>Giỏ hàng</h3>
     <div class="mt-4 d-flex align-items-center">
       <div class="form-check">
@@ -51,10 +52,14 @@
                     <img class="me-store-img" src="/uploads/{{this.img}}" alt="{{this.name}}">
                   </a>
                 </td>
-                {{!-- <td>{{this.quantity}}</td> --}}
-                <td>{{this.ODQtt}}</td>
                 <td>
-                  <button type="button" class="btn btn-primary" data-toggle="modal" data-id ="{{this.orderDetailId}}" data-target="#buy-modal">
+                    <p class="getProductQtt" style="display: none">{{this.quantity}}</p>
+                   <div class="value-button decreaseBtn" id="decrease" value="Decrease Value">-</div>
+                    <input name ="quantity" type="text" class="quantityInput" value="{{this.ODQtt}}" />
+                    <div class="value-button increaseBtn" id="increase" value="Increase Value">+</div>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-primary buy-btn" data-toggle="modal" data-id ="{{this.orderDetailId}}" data-target="#buy-modal">
                     Mua
                   </button>
                     <a href="" data-toggle="modal" data-target="#delete-product-cart-modal" data-id ="{{this.orderDetailId}}" class="btn btn-danger">Xóa</a>
@@ -105,6 +110,7 @@
           <p>Bạn chắc chắn muốn mua sản phẩm này? Người bán sẽ liên lạc với bạn.</p>
           <div class="form-group" style="display: none;">
             <input type="password" class="form-control" id="orderDetailId" name = "orderDetailId">
+            <input type="text" class="form-control" id="OrderQtt" name = "OrderQtt">
           </div>
         </div>
       <div class="modal-footer">
@@ -118,14 +124,62 @@
 
 <script>
     //
+    function toast({ title = "", message = "", type = "info", duration = 3000 }) {
+  const main = document.getElementById("toast");
+    if (main) {
+    const toast = document.createElement("div");
+
+    // Auto remove toast
+    const autoRemoveId = setTimeout(function () {
+      main.removeChild(toast);
+    }, duration + 1000);
+
+    // Remove toast when clicked
+    toast.onclick = function (e) {
+      if (e.target.closest(".toast__close")) {
+        main.removeChild(toast);
+        clearTimeout(autoRemoveId);
+      }
+    };
+
+    const icons = {
+      success: "fas fa-check-circle",
+      info: "fas fa-info-circle",
+      warning: "fas fa-exclamation-circle",
+      error: "fas fa-exclamation-circle"
+    };
+    const icon = icons[type];
+    const delay = (duration / 1000).toFixed(2);
+
+    toast.classList.add("toast", `toast--${type}`);
+    toast.style.animation = `slideInLeft ease .3s, fadeOut linear 1s ${delay}s forwards`;
+
+    toast.innerHTML = `
+                    <div class="toast__icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="toast__body">
+                        <h3 class="toast__title">${title}</h3>
+                        <p class="toast__msg">${message}</p>
+                    </div>
+                    <div class="toast__close">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+    main.appendChild(toast);
+    }
+  }
     document.addEventListener("DOMContentLoaded", function(){
         var orderDetail_id
         var inputODID = document.getElementById("orderDetailId")
+        var inputQtt = document.getElementById("OrderQtt")
         var deleteForm = document.forms["delete-product-cart-form"]
         var addODForm = document.forms["add-order-product-form"]
         var productItemCheckbox = $('input[name="productsIds[]"]')
         var checkAllSubBtn = $('.check-all-submit-btn')
         var checkboxAll = $('#checkbox-all')
+        var BuyBtns = document.querySelectorAll('.buy-btn');
+        var getQttOrder;
 
         $("#delete-product-cart-modal").on('show.bs.modal', function(event){
           var button = $(event.relatedTarget);
@@ -134,6 +188,11 @@
         $("#buy-modal").on('show.bs.modal', function(event){
           var button = $(event.relatedTarget);
           orderDetail_id = button.data("id");
+          BuyBtns.forEach((BuyBtn,i) => {
+            if(BuyBtn.getAttribute("data-id") == orderDetail_id){
+                getQttOrder = qttInputs[i].value;
+            }
+          })
         })
         //Delete product from cart
         var btnDeleteProductCart = document.getElementById("btn-delete-product-cart")
@@ -143,10 +202,13 @@
             deleteForm.submit()
         }
         //add product to orders
+        
+        
         var btnAddProduct = document.getElementById("btn-add-order")
         btnAddProduct.onclick = function(e){
             e.preventDefault()
             inputODID.setAttribute("value", orderDetail_id);
+            inputQtt.setAttribute("value", getQttOrder);
             addODForm.submit()
         }
         // when the checkbox all click
@@ -172,4 +234,34 @@
         }
     })
 
+</script>
+
+
+<script>
+  var ProductQtts = document.querySelectorAll('.getProductQtt');
+  var increaseBtns = document.querySelectorAll('.increaseBtn')
+  var decreaseBtns = document.querySelectorAll('.decreaseBtn')
+  var qttInputs = document.querySelectorAll('.quantityInput');
+
+  increaseBtns.forEach( (increaseBtn, i) => {
+    increaseBtn.addEventListener('click', function (e) {
+      var value = parseInt(qttInputs[i].value, 10);
+      var valueOri = parseInt(ProductQtts[i].innerHTML, 10);
+      value = isNaN(value) ? 1 : value;
+      if( value < valueOri ){
+        value++;
+      }
+      qttInputs[i].value = value;
+    })
+  })
+  decreaseBtns.forEach( (decreaseBtn, i) => {
+    decreaseBtn.addEventListener('click', function (e) {
+      var value = parseInt(qttInputs[i].value, 10);
+      value = isNaN(value) ? 1 : value;
+      value < 2 ? value = 1 : '';
+      value--;
+      value < 1 ? value = 1 : '';
+      qttInputs[i].value = value;
+    })
+  })
 </script>

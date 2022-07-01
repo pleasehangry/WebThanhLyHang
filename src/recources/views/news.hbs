@@ -46,7 +46,7 @@
                                 <a href="" class="user-link user-link-cmt">
                                     <img alt="" class="user-avat user-avat-cmt">
                                 </a>
-                                <input type="text" class="comment-submit-input" name="description" placeholder="Viết bình luận..." class="description-input">
+                                <input type="text" class="comment-submit-input" name="description" autocomplete="off" placeholder="Viết bình luận..." class="description-input">
                                 <input type="password" name="userId" value="{{this.data.curentUserId}}" style="display: none">
                                 <input type="text" name="blogId" value="{{this.data.news._id}}" style="display: none">
                             </form>
@@ -140,7 +140,6 @@
         var cmtForms = document.querySelectorAll('.post-cmts-form')
         var userSlug = `{{user.slug}}`
         var userAvat = `/uploads/{{user.avatar}}`
-        console.log(userAvat)
         var cmtInputSubmits = document.querySelectorAll('.comment-submit-input')
         var deleteForm = document.forms["delete-news-form"]
         var deleteCmtForm = document.forms["delete-comment-form"]
